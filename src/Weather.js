@@ -5,7 +5,6 @@ import ListGroup from 'react-bootstrap/ListGroup';
 
 function Weather(props) {
   const { weatherData } = props;
-  console.log('dentro weather component ', weatherData);
 
   const cityName = weatherData.name;
 
