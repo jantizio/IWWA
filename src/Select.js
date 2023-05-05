@@ -5,17 +5,18 @@ function Select(props) {
   const [selectedCity, setSelectedCity] = useState('Milano');
   const { setWeatherData } = props;
 
-  const apiKey = '5145e61cb6c1fadbaa10f1c92ee23575';
+  // const apiKey = '5145e61cb6c1fadbaa10f1c92ee23575';
+  const apiKey = '';
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${selectedCity}&units=metric&appid=${apiKey}`;
 
   useEffect(() => {
     let ignore = false;
-    setWeatherData('');
+    setWeatherData([]);
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
         if (!ignore) {
-          setWeatherData(data);
+          setWeatherData((previous) => [...previous, data]);
         }
       });
     return () => {

@@ -4,7 +4,8 @@ import Image from 'react-bootstrap/Image';
 import ListGroup from 'react-bootstrap/ListGroup';
 
 function Weather(props) {
-  const { weatherData } = props;
+  let { weatherData } = props;
+  if (weatherData[0]) console.log('primo elemento', weatherData[0].name);
 
   const cityName = weatherData.name;
 
