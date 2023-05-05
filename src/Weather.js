@@ -3,11 +3,10 @@ import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
 import ListGroup from 'react-bootstrap/ListGroup';
 
-function Weather(props) {
-  let { weatherData } = props;
-  if (weatherData[0]) console.log('primo elemento', weatherData[0].name);
+function Weather({ weatherData }) {
+  if (!weatherData) return <></>;
 
-  const cityName = weatherData.name;
+  const cityName = weatherData ? weatherData.name : '';
 
   const weatherCondition = weatherData.weather
     ? weatherData.weather[0].main
@@ -17,7 +16,7 @@ function Weather(props) {
     : '';
   const temperature = weatherData.main ? weatherData.main.temp : '';
   const weatherImg = weatherData.weather
-    ? `https://openweathermap.org/img/w/${weatherData.weather[0].icon}.png`
+    ? `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`
     : '';
 
   return (

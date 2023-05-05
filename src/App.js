@@ -9,39 +9,56 @@ import Button from 'react-bootstrap/Button';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-// const apiKey = ' ';
-const apiKey = '5145e61cb6c1fadbaa10f1c92ee23575';
-function PromiseAll(cities) {
-  const promArray = [];
-  cities.forEach((city) => {
-    promArray.push(
-      fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&units=metric&appid=${apiKey}`
-      )
-    );
-  });
-
-  console.log(promArray);
-
-  Promise.all(promArray).then((resultsArray) => {
-    resultsArray.forEach((data) => {
-      data.then((response) => {
-        console.log(response.json());
-      });
-    });
-  });
-}
-
 const cities = [
-  { name: 'Bologna', value: 'bologna' },
   { name: 'Milano', value: 'milano' },
   { name: 'Roma', value: 'roma' },
+  { name: 'Bologna', value: 'bologna' },
+  { name: 'Palermo', value: 'palermo' },
+  { name: 'Napoli', value: 'napoli' },
+  { name: 'Torino', value: 'torino' },
+  { name: 'Firenze', value: 'firenze' },
 ];
 
 function App() {
-  const [weatherData, setWeatherData] = useState([]);
+  const [weatherData, setWeatherData] = useState('');
+  const [promWeatherDataArray, setPromWeatherDataArray] = useState([]);
+  const [forWeatherDataArray, setForWeatherDataArray] = useState([]);
 
-  console.log('dati ', weatherData);
+  const url = (city) => {
+    // const apiKey = ' ';
+    const apiKey = '5145e61cb6c1fadbaa10f1c92ee23575';
+    return `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+  };
+
+  function fetchCity(city) {
+    fetch(url(city))
+      .then((response) => response.json())
+      .then((data) => {
+        setWeatherData(data);
+      });
+  }
+
+  function PromiseAll(cities) {
+    const promArray = [];
+    cities.forEach((city) => {
+      promArray.push(
+        fetch(url(city.value)).then((response) => response.json())
+      );
+    });
+
+    Promise.all(promArray).then((resultsArray) => {
+      setPromWeatherDataArray(resultsArray);
+    });
+  }
+
+  function fetchForEach(cities) {
+    cities.forEach(async (city) => {
+      const data = await fetch(url(city.value)).then((response) =>
+        response.json()
+      );
+      setForWeatherDataArray((current) => [...current, data]);
+    });
+  }
 
   return (
     <Container fluid className="animated-gradient">
@@ -53,7 +70,7 @@ function App() {
           {' '}
           <Form>
             {' '}
-            <Select setWeatherData={setWeatherData} />
+            <Select fetchData={fetchCity} cities={cities} />
           </Form>
         </Col>
       </Row>
@@ -65,6 +82,7 @@ function App() {
         </Col>
       </Row>
       <Row>
+        <Col xs={3}></Col>
         <Col>
           <h3 className="title mt-3">Display Cities using Promise.all</h3>
           <Button
@@ -75,11 +93,33 @@ function App() {
             Display all #1
           </Button>{' '}
         </Col>
+      </Row>{' '}
+      <Row>
+        {promWeatherDataArray.map((cityData, index) => (
+          <Col key={index}>
+            <Weather weatherData={cityData} />
+          </Col>
+        ))}
       </Row>
       <Row>
+        <Col xs={3}></Col>
         <Col>
-          <Button variant="primary">Display all #2</Button>{' '}
+          <h3 className="title mt-3">Display Cities one by one</h3>
+          <Button
+            variant="primary"
+            className="mt-1 mb-3"
+            onClick={() => fetchForEach(cities)}
+          >
+            Display all #2
+          </Button>{' '}
         </Col>
+      </Row>
+      <Row>
+        {forWeatherDataArray.map((cityData, index) => (
+          <Col key={index}>
+            <Weather weatherData={cityData} />
+          </Col>
+        ))}
       </Row>
     </Container>
   );
